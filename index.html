@@ -1,408 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
-            integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
-            crossorigin="" />
-        <!-- <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micronet Soluation</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css" integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
     
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>  -->
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #map { height: 100vh; }
+        .leaflet-control-attribution{
+            position: relative;
+            right: 115.8rem;
+        }
+        .leaflet-control-zoom{
+            position: relative;
+            top: 54rem;
+        }
+        .leaflet-control-scale{
+            position: relative;
+            top: 2em;
+            background-color: aliceblue;
+        }
+        .coordinate{
+            display: inline-block;
+            background-color: aliceblue;
+            color: black;
+            position: relative;
+            top: 60.5rem;
+            left: 92rem;
+            z-index: 500;
+        }
+        .leaflet-control-layers{
+            position: relative;
+            bottom: 5.7em;
+        }
+        /* .sidepanel  {
+            width: 0;
+            position: fixed;
+            z-index: 500;
+            height: 250px;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
 
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"/>
-        <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-       
+        .sidepanel a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
 
+        .sidepanel a:hover {
+            color: #f1f1f1;
+        }
 
-        <title>Micronet Solutions [Vector]</title>
-        <style>
-            #map {
-                height: 580px;
-                z-index: 0;
-            }
+        .sidepanel .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+        }
 
-            table,
-            th,
-            td {
-                border: 1px solid;
-            }
+        .openbtn {
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #111;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+        }
 
-            table {
-                position: relative;
-                left: 11px;
-                top: 8px;
-            }
+        .openbtn:hover {
+            background-color:#444;
+        } */
+</style>
+</head>
+<body>
+    
+    <div class="coordinate"></div>
+    <!-- <div id="mySidepanel" class="sidepanel">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <a href="#">About</a>
+        <a href="#">Services</a>
+        <a href="#">Clients</a>
+        <a href="#">Contact</a>
+    </div>
+      
+    <button class="openbtn" onclick="openNav()">☰ Toggle Sidepanel</button> -->
+    <button class="openbtn" onclick="openNav()">☰</button>
+    <div id="map"></div>
+   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+        // function openNav() {
+        //     document.getElementById("mySidepanel").style.width = "250px";
+        // }
 
-            #refreshButton {
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                padding: 10px;
-                z-index: 400;
-            }
+        // function closeNav() {
+        //     document.getElementById("mySidepanel").style.width = "0";
+        // }
+        var map = L.map('map').setView([20.5937, 78.9629], 5.4);
+        map.zoomControl.setPosition('topright');
+        var osm = new L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        });
 
-            #mydiv {
-                height: 340px;
-                width: 240px;
-                position: absolute;
-                z-index: 400;
-                background-color: #f1f1f1;
-                text-align: center;
-                border: 1px solid #d3d3d3;
-            }
+        // BaseMap WorldImagery
+        var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        }).addTo(map);
 
-            #mydivheader {
-                padding: 10px;
-                cursor: move;
-                z-index: 801;
-                background-color: #2196F3;
-                color: #fff;
-            }
+        // WorldTopoMap
+        var Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        });
 
-            #autocomplete {
-                z-index: 100;
-                margin-bottom: 5px;
-            }
-        </style>
-        <script src="main.js"></script>
-    </head>
+        // OceanBaseMap
+        var Esri_OceanBasemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
+	        maxZoom: 13
+        });
 
-    <body>
-        <div class="ui-widget" style="text-align:left;">
-            <input id="autocomplete" placeholder="Search for: State" >
-        </div>
-        <div id="map"></div>
-        <!-- <a href="table.html"></a> -->
-        <button id="refreshButton" onclick="mytable()">Table</button>
+        // NatGeographicMap
+        var Esri_NatGeoWorldMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
+	        maxZoom: 16
+        });
+    
+        
 
-        <div id="mydiv">
-            <div id="mydivheader">Click here to move</div>
-            <Table>
-                <tr>
-                    <th>GID</th>
-                    <th>States</th>
-                    <th>PID</th>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Andaman & Nicobar</td>
-                    <td>1</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Andhra Pradesh</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Arunachal Pradesh</td>
-                    <td>3</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>Assam</td>
-                    <td>4</td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>Bihar</td>
-                    <td>5</td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>Chandighar</td>
-                    <td>6</td>
-                </tr>
-                <tr>
-                    <td>7</td>
-                    <td>Dadar & Nagar</td>
-                    <td>7</td>
-                </tr>
-                <tr>
-                    <td>8</td>
-                    <td>Daman & Dui</td>
-                    <td>8</td>
-                </tr>
-                <tr>
-                    <td>9</td>
-                    <td>Delhi</td>
-                    <td>9</td>
-                </tr>
-                <tr>
-                    <td>10</td>
-                    <td>Disputed</td>
-                    <td>10</td>
-                </tr>
-            </Table>
-            <tbody id="mytablebody">
-
-            </tbody>
-        </div>
-
-
-        <!-- <div id="my">
-        <div id="tableclass" draggable=true>click here to move</div>    -->
-
-
-        </div>
-
-
-
-        <script>
-            var url = 'output.json';  // my GeoJSON data source, in this case a static file not a live PHP data feed.
-            var arr = [];
-            var arr1 = [];
-
-
-
-
-
-
-
-
-            // var map = L.map('map').setView([20.5937, 78.9629], 5.4);
-
-            // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            // attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            // }).addTo(map);
-
-            // var raster = L.Geoserver.wms("http://localhost:8080/geoserver/wms", {
-            //     //layers: "try:t43qca_202010311",
-            //     //layers: "try:n18_e076_1arc_v3",     
-            //     format: 'image/png',
-            //     attribution: "wmsLayer"
-            //     });
-            //     raster.addTo(map);
-
-
-            // Initialize autocomplete with empty source.
-            $("#autocomplete").autocomplete();
-
-            var map = L.map('map').setView([20.5937, 78.9629], 5.4);
-
-            var osm = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            });
-
-            var OpenStreetMap_BlackAndWhite = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
-                maxZoom: 18,
-                attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            });
-            OpenStreetMap_BlackAndWhite.addTo(map);
-
-
-            // Set style function that sets fill color property
-            function style(feature) {
-                return {
-                    fillColor: 'blue',
-                    fillOpacity: 0.5,
-                    weight: 2,
-                    opacity: 1,
-                    color: '#ffffff',
-                    dashArray: '3'
-                };
-            }
-            var highlight = {
-                'fillColor': 'yellow',
-                'weight': 2,
-                'opacity': 1
-            };
-
-
-            function forEachFeature(feature, layer) {
-                // Tagging each state poly with their name for the search control.
-                layer._leaflet_id = feature.properties.STATE_NAME;
-
-                var popupContent = "<p><b>STATE: </b>" + feature.properties.STATE_NAME +
-                    "</br>REGION: " + feature.properties.SUB_REGION +
-                    "</br>STATE ABBR: " + feature.properties.STATE_ABBR +
-                    // "</br>POP2010: "+ feature.properties.POP2010.toLocaleString() +
-                    // "</br>Pop 2010 per SQMI: "+ feature.properties.POP10_SQMI.toLocaleString() +
-                    // "</br>Males: "+ feature.properties.MALES.toLocaleString() +
-                    // "</br>Females: "+ feature.properties.FEMALES.toLocaleString() +
-                    // "</br>SQ Miles: "+ feature.properties.SQMI.toLocaleString() +
-                    '</p>';
-
-                layer.bindPopup(popupContent);
-
-                layer.on("click", function (e) {
-                    stateLayer.setStyle(style); //resets layer colors
-                    layer.setStyle(highlight);  //highlights selected.
-                });
-            }
-            
-           
-
-
-            // Null variable that will hold layer
-            var stateLayer = L.geoJson(null, { onEachFeature: forEachFeature, style: style });
-
-            $.getJSON(url, function (data) {
-                stateLayer.addData(data);
-
-                for (i = 0; i < data.features.length; i++) {  //loads State Name into an Array for searching
-                    arr1.push({ label: data.features[i].properties.STATE_NAME, value: "" });
-                }
-                addDataToAutocomplete(arr1);  //passes array for sorting and to load search control.
-            });
-
-            stateLayer.addTo(map);
-            console.log(stateLayer)
-
-            
-            // function tabledata(stateLayer){
-            //     var table = document.getElementById('mytablebody')
-
-            //     for (var i=0; i<stateLayer.features.length; i++){
-            //         var row = `<tr> 
-            //             <th>State</th>
-            //             <th>Region</th>
-            //             <th>State Area</th>
-            //         </tr>
-            //         <tr>
-            //             <td>${data[i].STATE_NAME}</td>
-            //             <td>${data[i].SUB_REGION}</td>
-            //             <td>${data[i].SUB_ABBR}</td>
-            //         </tr>`
-            //         table.innerHTML += row
-            //     }
-            // }
-            // tabledata();
-           
-           
-            ////////// Autocomplete search
-            function addDataToAutocomplete(arr) {
-
-                arr.sort(function (a, b) { // sort object by Name
-                    var nameA = a.label, nameB = b.label
-                    if (nameA < nameB) //sort string ascending
-                        return -1
-                    if (nameA > nameB)
-                        return 1
-                    return 0 //default return value (no sorting)
-                })
-
-                // The source for autocomplete.  https://api.jqueryui.com/autocomplete/#method-option
-                $("#autocomplete").autocomplete("option", "source", arr);
-
-                $("#autocomplete").on("autocompleteselect", function (event, ui) {
-                    polySelect(ui.item.label);  //grabs selected state name
-
-                    ui.item.value = '';
-                });
-            }	///////////// Autocomplete search end
-
-
-            // fire off click event and zoom to polygon  
-            function polySelect(a) {
-                map._layers[a].fire("click");  // 'clicks' on state name from search
-                var layer = map._layers[a];
-                map.fitBounds(layer.getBounds());  // zooms to selected poly
-            }
-
-           
-            // END...fire off click event and zoom to polygon
-
-            var baseMaps = {
+        var baseMaps = {
                 "Open Street Map": osm,
-                "OSM B&W": OpenStreetMap_BlackAndWhite
+                "WorldImagery":Esri_WorldImagery,
+                "WorldTopoMap":Esri_WorldTopoMap,
+                "OceanBaseMap":Esri_OceanBasemap,
+                "NatGeoWorldMap":Esri_NatGeoWorldMap,
             };
 
-            var overlayMaps = {
-                "India": stateLayer
-            };
+        // Add layer control
+        L.control.layers(baseMaps).addTo(map);
 
-            //Add layer control
-            L.control.layers(baseMaps, overlayMaps).addTo(map);
+        // Add Map Scale
+        L.control.scale({
+            metric: true,
+            imperial: false,
+            position: 'bottomright'}).addTo(map);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            // Make the DIV element draggable:
-            dragElement(document.getElementById("mydiv"));
-
-            function dragElement(elmnt) {
-                var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-                if (document.getElementById(elmnt.id + "header")) {
-                    // if present, the header is where you move the DIV from:
-                    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
-                } else {
-                    // otherwise, move the DIV from anywhere inside the DIV:
-                    elmnt.onmousedown = dragMouseDown;
-                }
-
-                function dragMouseDown(e) {
-                    e = e || window.event;
-                    e.preventDefault();
-                    // get the mouse cursor position at startup:
-                    pos3 = e.clientX;
-                    pos4 = e.clientY;
-                    document.onmouseup = closeDragElement;
-                    // call a function whenever the cursor moves:
-                    document.onmousemove = elementDrag;
-                }
-
-                function elementDrag(e) {
-                    e = e || window.event;
-                    e.preventDefault();
-                    // calculate the new cursor position:
-                    pos1 = pos3 - e.clientX;
-                    pos2 = pos4 - e.clientY;
-                    pos3 = e.clientX;
-                    pos4 = e.clientY;
-                    // set the element's new position:
-                    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-                    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-                }
-
-                function closeDragElement() {
-                    // stop moving when mouse button is released:
-                    document.onmouseup = null;
-                    document.onmousemove = null;
-                }
-            }
-
-
-
-            //onclick table button
-            // function mytable() {
-            // document.getElementById("mydiv").style.display = "none";
-            // }
-            function mytable() {
-                var x = document.getElementById("mydiv");
-                if (x.style.display === "none") {
-                    x.style.display = "block";
-                } else {
-                    x.style.display = "none";
-                }
-            }
-
-        </script>
-
-    </body>
-
+        // Map Coordinates Display
+        map.on('mousemove', function (e) {
+            console.log(e)
+            $('.coordinate').html(`Lat: ${e.latlng.lat} Lng: ${e.latlng.lng}`)
+        })
+        
+    </script>
+</body>
 </html>
