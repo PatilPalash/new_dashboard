@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micronet Soluation</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css" integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+    
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #map { 
+            height: 100vh; 
+            z-index: 0;
+        }
+        .leaflet-control-attribution{ 
+            position: fixed;
+            left: 0.5rem;
+            bottom: 0.25rem;
+        }
+        .leaflet-control-zoom{
+            position: fixed;
+            bottom: 2rem;
+            right: 0.2rem;
+        }
+        .leaflet-control-layers{
+            position: fixed;
+            top: 0;
+            right: 0;
+        }
+        .coordinate{
+            display: inline-block;
+            background-color: aliceblue;
+            color: black;
+            position: fixed;
+            bottom: 0.25rem;
+            right: 8rem;
+            z-index: 10000;
+        }
+        
+        .sidepanel  {
+            display: inline-block;
+            width: 0;
+            position: fixed;
+            z-index: 500;
+            height: 250px;
+            top: 0.5rem;
+            left: 0.5rem;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+        .sidepanel a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidepanel a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidepanel .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+        }
+
+        .openbtn {
+            z-index: 500;
+            position:fixed;
+            top: 0.5rem;
+            left: 0.5rem;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #111;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+        }
+
+        .openbtn:hover {
+            background-color:#444;
+        }
+</style>
+</head>
+<body>
+    
+    
+    
+    <div id="map">
+
+    <div class="coordinate"></div>
+    <div id="mySidepanel" class="sidepanel">
+        <a href="javascript:void(0)" id="closebtn" class="closebtn" onclick="closeNav()">×</a>
+        <a href="#">About</a>
+        <a href="#">Services</a>
+        <a href="#">Clients</a>
+        <a href="#">Contact</a>
+    </div>
+      
+    <button class="openbtn" id="openbtn" onclick="openNav()">☰</button>
+    </div>
+   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+        //Toggle Slider Bar
+        function openNav() {
+            document.getElementById("mySidepanel").style.width = "350px";
+        }
+        $(".openbtn").click(function(){
+            $("#openbtn").hide();
+        });
+        $(".closebtn").click(function(){
+           $("#openbtn").show();
+        });
+
+        function closeNav() {
+            document.getElementById("mySidepanel").style.width = "0";
+        }
+
+        
+
+        var map = L.map('map').setView([20.5937, 78.9629], 5.4);
+        map.zoomControl.setPosition('bottomright');
+        
+        var osm = new L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        // attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        
+        });
+        
+        // BaseMap WorldImagery
+        var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        }).addTo(map);
+
+        // WorldTopoMap
+        var Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        });
+
+        // OceanBaseMap
+        var Esri_OceanBasemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
+	        maxZoom: 13
+        });
+
+        // NatGeographicMap
+        var Esri_NatGeoWorldMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
+	        maxZoom: 16
+        });
+    
+        
+
+        var baseMaps = {
+                "Open Street Map": osm,
+                "WorldImagery":Esri_WorldImagery,
+                "WorldTopoMap":Esri_WorldTopoMap,
+                "OceanBaseMap":Esri_OceanBasemap,
+                "NatGeoWorldMap":Esri_NatGeoWorldMap,
+            };
+
+        // Add layer control
+        L.control.layers(baseMaps).addTo(map);
+
+        // Add Map Scale
+        L.control.scale({
+            metric: true,
+            imperial: false,
+            position: 'bottomright'}).addTo(map);
+
+        
+
+        // Map Coordinates Display (lat and long)
+        map.on('mousemove', function (e) {
+            console.log(e)
+            $('.coordinate').html(`Lat: ${e.latlng.lat.toFixed(2)} Lng: ${e.latlng.lng.toFixed(2)}`)
+        })
+        
+    </script>
+</body>
+</html>
